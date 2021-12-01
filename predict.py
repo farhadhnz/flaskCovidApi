@@ -3,6 +3,47 @@ import numpy as np
 
 class Predict:
 
+    def generate_csv(self, variables):
+        Data1=pd.read_csv("Joined_Value_Updated.csv")
+        Data1=Data1.set_index("location")
+        Data1["intercept"]=Data1["0"]
+        # DataFil=Data1[Data1["slope"]>-5]
+        DataFil=Data1.sort_values(by="slope")
+        DataFil=DataFil.head(int(len(variables)))
+
+
+        Slope=DataFil["slope"]
+        Intercept=DataFil["intercept"]
+        DataFil=DataFil[variables]
+
+
+        A_s=DataFil.to_numpy()
+        C_s=Slope.to_numpy()
+        B_s=np.dot(np.linalg.inv(A_s),C_s)
+
+        A_int=DataFil.to_numpy()
+        C_int=Intercept.to_numpy()
+        B_int=np.dot(np.linalg.inv(A_int),C_int)
+
+
+        Data2=pd.read_csv("1CountryParametersV2.csv")
+        Data2=Data2.set_index("location")
+
+        DataWrite=pd.DataFrame({"Country":"0","Rate":0.0,"Intercept":0.0,"Use":True},index=[0])
+        for i in range(len(Data2)):
+            # print(Data2.index[i],np.dot(B,Data2.iloc[i][Variables].to_numpy()))
+            
+            if bool(np.dot(B_s,Data2.iloc[i][variables].to_numpy())<0) & bool(np.dot(B_int,Data2.iloc[i][variables].to_numpy())>0):
+                Use=True
+            else:
+                Use=False
+            Add=[Data2.index[i],np.dot(B_s,Data2.iloc[i][variables].to_numpy()),np.dot(B_int,Data2.iloc[i][variables].to_numpy()),Use]
+            DataWrite.loc[len(DataWrite)] =Add
+        DataWrite=DataWrite.drop([0])
+        DataWrite=DataWrite.set_index("Country")
+        DataWrite.to_csv("RateOutput.csv")
+
+
     def predict_cases(self, country, str_index):
         Countries=["BelgiumCovid.csv","CzechiaCovid.csv","FranceCovid.csv","GermanyCovid.csv",\
            "GreeceCovid.csv","ItalyCovid.csv","NetherlandsCovid.csv","PolandCovid.csv",\
@@ -54,6 +95,7 @@ class Predict:
                 i+=1
             Addindex=(Deneme.index[-1]+1)+np.arange(14)
             df=pd.DataFrame(AddFrame,columns=["new_cases_per_million"],index=Addindex)
+            # df_date=pd.DataFrame(AddFrame,columns=["date"],index=Addindex)
             Prediction=pd.concat([Deneme,df],ignore_index=True)
             return df.values.transpose()[0]
         else:

@@ -21,7 +21,10 @@ def api_predict():
         inputs = request.json
         country = inputs['country']
         str_index = inputs['strIndex']
-        prediction = Predict().predict_cases(country, str_index)
+        variables = inputs['variables']
+        pr = Predict()
+        pr.generate_csv(variables)
+        prediction = pr.predict_cases(country, str_index)
         return jsonify(list(prediction))
 
 
