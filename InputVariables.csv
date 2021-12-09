@@ -1,10 +1,8 @@
 Variables
-population
 population_density
 gdp_per_capita
-cardiovasc_death_rate
 diabetes_prevalence
 life_expectancy
-human_development_index
 smokers
+hospital_beds_per_thousand
 AirPolutioIndex
