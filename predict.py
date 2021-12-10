@@ -1,10 +1,13 @@
 import pandas as pd
 import numpy as np
+import os
 
 class Predict:
 
     def generate_csv(self, variables):
-        df=pd.read_csv("InputVariables.csv")
+        THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+        inp_var_file = os.path.join(THIS_FOLDER, 'InputVariables.csv')
+        df=pd.read_csv(inp_var_file)
         Variables=df.to_numpy().flatten().tolist()
 
         # dfCoeff=pd.read_csv("Coefficient.csv")
@@ -13,7 +16,8 @@ class Predict:
         # dfCoeff=pd.read_csv("Coefficient.csv")
         # coeff=dfCoeff.to_numpy().flatten().tolist()
         print(coeff)
-        Data2=pd.read_csv("1CountryParametersV2.csv")
+        country_par_file = os.path.join(THIS_FOLDER, '1CountryParametersV2.csv')
+        Data2=pd.read_csv(country_par_file)
         Data2=Data2.set_index("location")
 
         DataWrite=pd.DataFrame({"Country":"0","Rate":0.0,"Intercept":0.0,"Use":True},index=[0])
@@ -62,7 +66,10 @@ class Predict:
         if (Rates[Rates["Country"]==CountSel]["Use"].iloc[0]):
             m=Rates[Rates["Country"]==CountSel]["Rate"]
             b=Rates[Rates["Country"]==CountSel]["Intercept"]
-            CountryFixed=pd.read_csv(f"Countries/{PickCountry}").dropna()
+            THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+            country_par_file = os.path.join(THIS_FOLDER, f"Countries/{PickCountry}")
+
+            CountryFixed=pd.read_csv(country_par_file).dropna()
             NewPerMil=CountryFixed["new_cases_per_million"]
             NewPerMilDif=NewPerMil.diff()
             CalRate=m*StrIndex+b

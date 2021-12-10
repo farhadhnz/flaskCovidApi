@@ -27,5 +27,5 @@ def api_predict():
         prediction = pr.predict_cases(country, str_index)
         return jsonify(list(prediction))
 
-
-app.run()
+if __name__ == '__main__':
+    app.run()
